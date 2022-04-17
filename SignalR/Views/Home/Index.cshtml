@@ -1,0 +1,83 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+
+}
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width" />
+<title>Index</title>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+@section Scripts{
+    @*<script src="~/Scripts/jquery-3.3.1.min.js"></script>*@
+    <script src="~/Scripts/jquery.signalR-2.4.1.min.js"></script>
+    <script type="text/javascript" src="/signalr/hubs"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            // Declare a proxy to reference the hub.
+            var notifications = $.connection.myHub;
+            //debugger;
+            // Create a function that the hub can call to broadcast messages.
+            notifications.client.updateMessages = function () {
+                getAllMessages()
+            };
+            // Start the connection.
+            $.connection.hub.start().done(function () {
+                console.log("connection started")
+                //notifications.onconn();
+                getAllMessages();
+            }).fail(function (e) {
+                alert(e);
+            });
+        });
+        function getAllMessages() {
+            var tbl = $('#messagesTable');
+            $.ajax({
+                url: '/Home/GetMessages',
+                contentType: 'application/html ; charset:utf-8',
+                type: 'GET',
+                dataType: 'html',
+                success: function (result) {
+                    console.log(result);
+                    var a2 = JSON.parse(result);
+                    tbl.empty();
+                    var i = 1;
+                    $.each(a2, function (key, value) {
+                        tbl.append('<tr>' + '<td>' + value.MaCK + '</td>' + '<td>' + value.GiaMua1 + '</td>' + '<td>' + value.SoLuongMua1 + '</td>' +
+                            '<td>' + value.GiaMua2 + '</td>' + '<td>' + value.SoLuongMua2 + '</td>' +
+                            '<td>' + value.GiaMua3 + '</td>' + '<td>' + value.SoLuongMua3 + '</td>' +
+                            '<td>' + value.GiaKhop + '</td>' + '<td>' + value.SoLuongKhop + '</td>' +
+                            '<td>' + value.GiaBan1 + '</td>' + '<td>' + value.SoLuongBan1 + '</td>' +
+                            '<td>' + value.GiaBan2 + '</td>' + '<td>' + value.SoLuongBan2 + '</td>' +
+                            '<td>' + value.GiaBan3 + '</td>' + '<td>' + value.SoLuongBan3 + '</td>' +
+                            '<td>' + value.TongSo + '</td>' + '</tr>');
+                        i = i + 1;
+                    });
+                }
+            });
+        }
+    </script>
+}
+<table class="table">
+    <thead>
+        <tr>
+            <th>MaCK</th>
+            <th>GiaMua1</th>
+            <th>SoLuongMua1</th>
+            <th>GiaMua2</th>
+            <th>SoLuongMua2</th>
+            <th>GiaMua3</th>
+            <th>SoLuongMua3</th>
+            <th>GiaKhop</th>
+            <th>SoLuongKhop</th>
+            <th>GiaBan1</th>
+            <th>SoLuongBan1</th>
+            <th>GiaBan2</th>
+            <th>SoLuongBan2</th>
+            <th>GiaBan3</th>
+            <th>SoLuongBan3</th>
+            <th>TongSo</th>
+        </tr>
+    </thead>
+    <tbody id="messagesTable"></tbody>
+</table>
+
